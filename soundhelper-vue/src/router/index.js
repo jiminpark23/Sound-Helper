@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StockList from '../views/StockList.vue'
 import StockOrder from '../views/StockOrder.vue'
-import RealTime from '../views/RealTime.vue'
+import LiveMode from '../views/LiveMode.vue'
 // import VueRouter from 'vue-router'
 // import vue from 'vue'
 // vue.use(VueRouter)
@@ -28,9 +28,9 @@ const routes = [
     props: true
   },
   {
-    path: '/realtime',
-    name: 'realtime',
-    component: RealTime
+    path: '/order/:name/livemode',
+    name: 'livemode',
+    component: LiveMode
   },
 ];
 

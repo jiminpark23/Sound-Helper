@@ -7,23 +7,26 @@
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px;">신한지주</span>
+            <span id="name" style="width: 150px;">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
-        <div style="overflow: scroll; height: 460px; width:100%;">
-            <!-- 차트 -->
-            <highcharts :options="chartOptions" ref="highchart"></highcharts>
-            <!-- 현재가 -->
-            <h2 class="current-price" v-if="stocks[$route.params.name - 1].fluctuationRate < 0" style="color: blue">
-                {{ stocks[$route.params.name - 1].price }}</h2>
-            <h2 class="current-price" v-if="stocks[$route.params.name - 1].fluctuationRate > 0" style="color: red">
-                {{ stocks[$route.params.name - 1].price }}</h2>
-            <!-- 일반모드 전환 -->
-            <router-link to="/">
-                <button id="normal-mode" @click='goToMenu'>차트</button>
-            </router-link>
-            <div style="height: 40px;"></div>
+        <div style="overflow: scroll; height: 460px">
+            <div id="chart" >
+                <!-- 차트 -->
+                <highcharts :options="chartOptions" ref="highchart" id="chart-container" style="height: 300px"></highcharts>
+                <!-- <div id="chart-container" style="height: 300px"> -->
+                <!-- 현재가 -->
+                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
+                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
+                <!-- 일반모드 전환 -->
+                <router-link to="/">
+                    <button id="normal-mode" @click='goToMenu'>차트</button>
+                </router-link>
+                <router-link to="/">
+                    <button id="live-mode" @click='goToMenu'>Live</button>
+                </router-link>
+            </div>
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
@@ -68,7 +71,6 @@ let currentTime = new Date().toTimeString().split(' ')[0];
 const categories = [currentTime];
 
 export default {
-    name: 'Query',
     components: {
         highcharts: Chart,
     },
@@ -180,76 +182,7 @@ export default {
             this.isPopupOpen = false;
         },
 
-        drawChart(data, name = "") {
-            Highcharts.chart("container", {
-                chart: {
-                    width: 230 + 'px',
-                    height: 200 + 'px',
-                },
-                title: {
-                    text: "실시간 차트",
-                    style: "10px",
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true,
-                    },
-                },
-                xAxis: {
-                    categories: data.categories,
-                    labels: {
-                        style: {
-                            fontSize: "5px",
-                        },
-                    },
-                    title: {
-                        text: "Date/time",
-                        align: "high",
-                    },
-                },
-                yAxis: {
-                    title: {
-                        text: "price",
-                        align: "high",
-                    },
-                    labels: {
-                        style: {
-                            fontSize: "10px",
-                        },
-                    },
-                },
-                series: [{
-                    showInLegend: false,
-                    data: data.data.map(function (item) {   ///////////////////
-                        return item[1];
-                    }),
-                    point: {
-                        events: {
-                            click: function () {
-                                this.sonify({
-                                    instruments: [{
-                                        instrument: "triangleMajor",
-                                        instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
-                                            duration: 200,
-                                            pan: "x",
-                                            frequency: "y",
-                                        },
-                                        instrumentOptions: {
-                                            minFrequency: 520,
-                                            maxFrequency: 1050,
-                                        }
-                                    }
-                                    ]
-                                });
-                            }
-                        }
-                    }
-                }]
-            });
-        },
+        
         liveplay() {
             const chart = Highcharts.charts[0];
             const series = chart.series[0];
@@ -310,24 +243,9 @@ export default {
     height: 568px;
 }
 
-
-/************/
 #chart {
-    width: 300px;
-    height: 230px;
-    top: 30px;
-    left: 10px;
-    border: 0.1px solid red;
+    position: relative;
 }
-
-/*
-#chart-container2 {
-    width: 300px;
-    height: 230px;
-    top: 30px;
-    left: 10px;
-}
-*/
 
 .current-price {
     width: 40px;
@@ -339,21 +257,27 @@ export default {
     color: blue;
 }
 
-/* #voice {
-    justify-content: space-between;
-  width: 130px;
-  height: 45px;
-  border: 1px solid;
-  border-radius: 25px;
-  padding: 10px;
-  margin: 5px 10px 5px 10px;
-  background-color: rgb(241, 241, 241);
-} */
-
 #normal-mode {
     width: 48px;
     height: 48px;
     top: 7px;
+    right: 7px;
+    position: absolute;
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000000;
+    border-radius: 12px;
+}
+#live-mode {
+    width: 48px;
+    height: 48px;
+    top: 60px;
     right: 7px;
     position: absolute;
     font-family: 'IBM Plex Sans';
@@ -426,17 +350,6 @@ export default {
     height: 80px;
     font-size: 20px;
 }
-
-/* #button {
-  justify-content: space-between;
-  width: 130px;
-  height: 45px;
-  border: 1px solid;
-  border-radius: 25px;
-  padding: 10px;
-  margin: 5px 10px 5px 10px;
-  background-color: rgb(241, 241, 241);
-} */
 
 #voice {
     border: none;
