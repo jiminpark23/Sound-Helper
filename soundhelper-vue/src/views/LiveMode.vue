@@ -5,7 +5,7 @@
         </div>
         <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
             <!-- 상단 바, 음표버튼 -->
-            <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;" aria-label="주식목록페이지로 돌아가는 버튼입니다.">&lt;</button>
+            <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
@@ -21,7 +21,7 @@
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
                 <!-- 차트모드 전환 -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
-                    <button id="chart-mode" aria-label="차트분석을 하는 페이지로 이동하는 버튼입니다.">차트</button>
+                    <button id="chart-mode">차트</button>
                 </router-link>
                 <!-- 라이브모드 전환 -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">

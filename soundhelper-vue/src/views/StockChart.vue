@@ -7,7 +7,7 @@
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}} 차트분석</span>
+            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
