@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import StockList from '../views/StockList.vue'
 import PopUp from '../views/PopUp.vue'
 import StockOrder from '../views/StockOrder.vue'
+import StockChart from '../views/StockChart.vue'
+
 // import VueRouter from 'vue-router'
 // import vue from 'vue'
 // vue.use(VueRouter)
@@ -31,6 +33,11 @@ const routes = [
     path: '/popup',
     name: 'popup',
     component: PopUp
+  },
+  {
+    path: '/order/:name/chart',
+    name: 'chart',
+    component: StockChart
   },
 ];
 
