@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StockList from '../views/StockList.vue'
-import PopUp from '../views/PopUp.vue'
 import StockOrder from '../views/StockOrder.vue'
+import RealTime from '../views/RealTime.vue'
 // import VueRouter from 'vue-router'
 // import vue from 'vue'
 // vue.use(VueRouter)
@@ -28,9 +28,9 @@ const routes = [
     props: true
   },
   {
-    path: '/popup',
-    name: 'popup',
-    component: PopUp
+    path: '/realtime',
+    name: 'realtime',
+    component: RealTime
   },
 ];
 

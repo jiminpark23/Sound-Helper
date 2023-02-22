@@ -12,9 +12,8 @@
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
         <div style="overflow: scroll; height: 460px; width:100%;">
-            <highcharts :options="chartOptions" ref="highchart"></highcharts>
             <!-- 차트 -->
-
+            <highcharts :options="chartOptions" ref="highchart"></highcharts>
             <!-- 현재가 -->
             <h2 class="current-price" v-if="stocks[$route.params.name - 1].fluctuationRate < 0" style="color: blue">
                 {{ stocks[$route.params.name - 1].price }}</h2>
