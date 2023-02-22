@@ -45,7 +45,7 @@
             <!-- <div style="height: 155px"></div> -->
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="voice">음성인식</button>
+                <button id="voice" aria-label="음성인식 버튼입니다. 신한지주 2023년 3월 이렇게 말씀해주세요">음성인식</button>
                 <!-- <button id="erate">수익률</button> -->
             </div>
             <!-- <div style="height: 135px"></div> -->
