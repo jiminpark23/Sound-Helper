@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import StockList from '../views/StockList.vue'
 import StockOrder from '../views/StockOrder.vue'
 import LiveMode from '../views/LiveMode.vue'
+import StockChart from '../views/StockChart.vue'
 // import VueRouter from 'vue-router'
 // import vue from 'vue'
 // vue.use(VueRouter)
@@ -28,9 +29,14 @@ const routes = [
     props: true
   },
   {
-    path: '/order/:name/livemode',
-    name: 'livemode',
+    path: '/order/:name/live',
+    name: 'live',
     component: LiveMode
+  },
+  {
+    path: '/order/:name/chart',
+    name: 'chart',
+    component: StockChart
   },
 ];
 

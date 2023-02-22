@@ -3,11 +3,11 @@
         <div>
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
-        <div id="top-bar">
+        <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px;">{{ stocks[$route.params.name-1].name}}</span>
+            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
@@ -19,12 +19,13 @@
                 <!-- 현재가 -->
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
-                <!-- 일반모드 전환 -->
-                <router-link to="/">
-                    <button id="normal-mode" @click='goToMenu'>차트</button>
+                <!-- 차트모드 전환 -->
+                <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
+                    <button id="chart-mode">차트</button>
                 </router-link>
-                <router-link to="/">
-                    <button id="live-mode" @click='goToMenu'>Live</button>
+                <!-- 라이브모드 전환 -->
+                <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
+                    <button id="live-mode">Live</button>
                 </router-link>
             </div>
             <div id="count">
@@ -183,76 +184,6 @@ export default {
             this.isPopupOpen = false;
         },
 
-        drawChart(data, name = "") {
-            Highcharts.chart("container", {
-                chart: {
-                    width: 230 + 'px',
-                    height: 200 + 'px',
-                },
-                title: {
-                    text: "실시간 차트",
-                    style: "10px",
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true,
-                    },
-                },
-                xAxis: {
-                    categories: data.categories,
-                    labels: {
-                        style: {
-                            fontSize: "5px",
-                        },
-                    },
-                    title: {
-                        text: "Date/time",
-                        align: "high",
-                    },
-                },
-                yAxis: {
-                    title: {
-                        text: "price",
-                        align: "high",
-                    },
-                    labels: {
-                        style: {
-                            fontSize: "10px",
-                        },
-                    },
-                },
-                series: [{
-                    showInLegend: false,
-                    data: data.data.map(function (item) {   
-                        return item[1];
-                    }),
-                    point: {
-                        events: {
-                            click: function () {
-                                this.sonify({
-                                    instruments: [{
-                                        instrument: "triangleMajor",
-                                        instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
-                                            duration: 200,
-                                            pan: "x",
-                                            frequency: "y",
-                                        },
-                                        instrumentOptions: {
-                                            minFrequency: 520,
-                                            maxFrequency: 1050,
-                                        }
-                                    }
-                                    ]
-                                });
-                            }
-                        }
-                    }
-                }]
-            });
-        },
         liveplay() {
             const chart = Highcharts.charts[0];
             const series = chart.series[0];
@@ -307,7 +238,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .page {
     width: 320px;
     height: 568px;
@@ -315,6 +246,7 @@ export default {
 
 #chart {
     position: relative;
+    border: 0.5px solid lightgray
 }
 
 .current-price {
@@ -324,10 +256,11 @@ export default {
     top: 7px;
     left: 7px;
     font-weight: bold;
-    color: blue;
+    font-size: 30px;
 }
 
-#normal-mode {
+
+#chart-mode {
     width: 48px;
     height: 48px;
     top: 7px;
@@ -343,6 +276,7 @@ export default {
     text-align: center;
     color: #000000;
     border-radius: 12px;
+    border: 0.5px solid lightgray
 }
 #live-mode {
     width: 48px;
@@ -360,6 +294,7 @@ export default {
     text-align: center;
     color: #000000;
     border-radius: 12px;
+    border: 0.5px solid lightgray
 }
 
 #name {
@@ -367,6 +302,7 @@ export default {
     float: left;
     margin-left: 10px;
     border: 1px solid;
+    padding-left: 5px;
 }
 
 #search-icon {
@@ -443,7 +379,7 @@ export default {
 #buy_button {
     border: none;
     width: 120px;
-    height: 40px;
+    height: 50px;
     margin-right: 5px;
     border-radius: 15px;
     font-size: 20px;
@@ -453,7 +389,7 @@ export default {
 #sell_button {
     border: none;
     width: 120px;
-    height: 40px;
+    height: 50px;
     margin-left: 5px;
     border-radius: 15px;
     font-size: 20px;
@@ -513,7 +449,7 @@ export default {
     top: 40px;
     left: 10px;
     background-color: white;
-    border: 1px solid black;
+    border: none;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -534,4 +470,6 @@ export default {
     font-style: normal;
     font-weight: 1000;
     font-size: 25px;
+    border: none;
+    color: white
 }</style>

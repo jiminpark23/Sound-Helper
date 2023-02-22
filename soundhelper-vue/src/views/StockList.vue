@@ -28,7 +28,7 @@
         </li>
       </ul>
     </div>
-    <div style="height: 292px; overflow: scroll;">
+    <div style="height: 302px; overflow: scroll;">
       <!-- 주식 종목 목록 -->
       <div v-for="stock in stocks" :key="stock.id">
         <table>
@@ -118,6 +118,7 @@
 #page {
   width: 320px;
   height: 568px;
+
 }
 
 #top {
@@ -169,6 +170,7 @@
 #bar img {
   position: absolute;
   width: 320px;
+  height: 33px
 }
 
 

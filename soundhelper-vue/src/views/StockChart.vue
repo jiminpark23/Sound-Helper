@@ -3,7 +3,7 @@
         <div>
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
-        <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
+        <div id="top-bar" style="height: 33px; margin-bottom: 10px">
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
@@ -19,26 +19,20 @@
                 <!-- 현재가 -->
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
-                <!-- 차트모드 전환 -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
-                    <button id="chart-mode">차트</button>
-                </router-link>
-                <!-- 라이브모드 전환 -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
-                    <button id="live-mode">Live</button>
-                </router-link>
+                <!-- 일반모드 전환 -->
+                
+                    <button id="chart-mode">?</button>
+                    <button id="live-mode">?</button>
             </div>
-            <div id="count">
-                <!-- 플러스마이너스 버튼, 현재 수 -->
+            <!-- <div id="count">
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
                 <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
-            </div>
-            <div class="trade">
-                <!-- 구매 판매 버튼 -->
+            </div> -->
+            <!-- <div class="trade">
                 <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">구매</button>
                 <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">판매</button>
-            </div>
+            </div> -->
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
                     <div>
@@ -48,13 +42,13 @@
                     </div>
                 </div>
             </div>
-            <div style="height: 155px"></div>
+            <!-- <div style="height: 155px"></div> -->
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="deposit">예수금</button>
-                <button id="erate">수익률</button>
+                <button id="voice">음성인식</button>
+                <!-- <button id="erate">수익률</button> -->
             </div>
-            <div style="height: 135px"></div>
+            <!-- <div style="height: 135px"></div> -->
         </div>
         <div style="position: fixed">
             <img src="..\assets\bottom_bar.png" id="bottom-bar">
@@ -66,13 +60,13 @@
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
-
+    
 sonificationInit(Highcharts)
 let currentTime = new Date().toTimeString().split(' ')[0];
 const categories = [currentTime];
 
 export default {
-    name: 'Query',
+    
     components: {
         highcharts: Chart,
     },
@@ -111,6 +105,7 @@ export default {
                     }
                 }],
                 xAxis: {
+                   
                     categories: [new Date().toTimeString().split(" ")[0]],
                     labels: {
                         style: {
@@ -184,6 +179,77 @@ export default {
             this.isPopupOpen = false;
         },
 
+        drawChart(data, name = "") {
+            Highcharts.chart("container", {
+                chart: {
+                    width: 230 + 'px',
+                    height: 200 + 'px',
+                },
+                title: {
+                    text: "실시간 차트",
+                    style: "10px",
+                },
+                accessibility: {
+                    announceNewData: {
+                        enabled: true,
+                    },
+                },
+                xAxis: {
+                    
+                    categories: data.categories,
+                    labels: {
+                        style: {
+                            fontSize: "5px",
+                        },
+                    },
+                    title: {
+                        text: "Date/time",
+                        align: "high",
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "price",
+                        align: "high",
+                    },
+                    labels: {
+                        style: {
+                            fontSize: "10px",
+                        },
+                    },
+                },
+                series: [{
+                    showInLegend: false,
+                    data: data.data.map(function (item) {   
+                        return item[1];
+                    }),
+                    point: {
+                        events: {
+                            click: function () {
+                                this.sonify({
+                                    instruments: [{
+                                        instrument: "triangleMajor",
+                                        instrumentMapping: {
+                                            volume: function (point) {
+                                                return point.color === "red" ? 0.2 : 0.8;
+                                            },
+                                            duration: 200,
+                                            pan: "x",
+                                            frequency: "y",
+                                        },
+                                        instrumentOptions: {
+                                            minFrequency: 520,
+                                            maxFrequency: 1050,
+                                        }
+                                    }
+                                    ]
+                                });
+                            }
+                        }
+                    }
+                }]
+            });
+        },
         liveplay() {
             const chart = Highcharts.charts[0];
             const series = chart.series[0];
@@ -258,7 +324,6 @@ export default {
     font-weight: bold;
     font-size: 30px;
 }
-
 
 #chart-mode {
     width: 48px;
@@ -339,30 +404,12 @@ export default {
     border: none;
 }
 
-#deposit {
-    border: none;
-    margin-bottom: 10px;
-    border-radius: 15px;
-    width: 181px;
-    height: 80px;
-    font-size: 20px;
-}
-
-#erate {
-    border: none;
-    margin-top: 10px;
-    border-radius: 15px;
-    width: 181px;
-    height: 80px;
-    font-size: 20px;
-}
-
 #voice {
     border: none;
+    margin-top: 40px;
     border-radius: 15px;
-    width: 120px;
-    height: 40px;
-    margin: 10px 100px 10px 100px;
+    width: 181px;
+    height: 80px;
     font-size: 20px;
 }
 
@@ -375,36 +422,6 @@ export default {
     position: absolute;
     width: 320px;
 }
-
-#buy_button {
-    border: none;
-    width: 120px;
-    height: 50px;
-    margin-right: 5px;
-    border-radius: 15px;
-    font-size: 20px;
-    color: white;
-}
-
-#sell_button {
-    border: none;
-    width: 120px;
-    height: 50px;
-    margin-left: 5px;
-    border-radius: 15px;
-    font-size: 20px;
-    color: white;
-}
-
-#minusone {
-    border-radius: 15px 0 0 15px;
-    width: 60px;
-    height: 50px;
-    border: none;
-    font-size: 20px;
-    color: white;
-}
-
 .product {
     width: 320px;
     height: 568px;
@@ -413,63 +430,4 @@ export default {
     border: 1px solid black;
 }
 
-#plusone {
-    border-radius: 0 15px 15px 0;
-    width: 60px;
-    height: 50px;
-    border: none;
-    font-size: 20px;
-    color: white;
-}
-
-#input-count {
-    width: 80px;
-    height: 50px;
-    border: 0.5px solid lightgray;
-    font-size: 20px;
-    text-align: center;
-    color: black;
-}
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 320px;
-    height: 568px;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.popup {
-    width: 300px;
-    height: 450px;
-    top: 40px;
-    left: 10px;
-    background-color: white;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 30px;
-}
-
-.popup-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 181px;
-    height: 97px;
-    margin: 20px 0px 20px 0px;
-    border-radius: 25px;
-    justify-content: center;
-    font-family: 'IBM Plex Sans';
-    font-style: normal;
-    font-weight: 1000;
-    font-size: 25px;
-    border: none;
-    color: white
-}</style>
+</style>
