@@ -115,9 +115,6 @@
 </script>
 
 <style>
-body {
-
-}
 #page {
   width: 320px;
   height: 568px;
