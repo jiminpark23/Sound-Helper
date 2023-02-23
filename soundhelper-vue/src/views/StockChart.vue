@@ -19,10 +19,10 @@
                 <!-- 현재가 -->
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
-                <!-- 일반모드 전환 -->
+                <!-- 모드 전환 / 지워도 됨 -->
                 
-                    <button id="chart-mode">?</button>
-                    <button id="live-mode">?</button>
+                    <!-- <button id="chart-mode">?</button>
+                    <button id="live-mode">?</button> -->
             </div>
             <!-- <div id="count">
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>

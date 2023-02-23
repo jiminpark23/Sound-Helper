@@ -3,7 +3,7 @@
         <div>
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
-        <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
+        <div style="height: 33px; margin-bottom: 10px;">
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
@@ -134,7 +134,7 @@ export default {
                     },
                 },
                 title: {
-                    text: "실시간 차트",
+                    text: "차트",
                     style: "10px",
                 },
                 accessibility: {

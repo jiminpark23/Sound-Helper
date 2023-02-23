@@ -12,7 +12,7 @@ export default {
   methods: {
     goToStockList() {
       this.$router.push('/stocks')
-    }
+    },
   }
 }
 </script>
