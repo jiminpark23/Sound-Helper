@@ -4,55 +4,55 @@
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
         <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
-            <!-- ªÛ¥‹ πŸ, ¿Ω«•πˆ∆∞ -->
+            <!-- ÏÉÅÎã® Î∞î, ÏùåÌëúÎ≤ÑÌäº -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="livemode"></i>
+            <i class="fa-solid fa-music" id="music-icon" @click="reload"></i>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
-                <!-- ¬˜∆Æ -->
+                <!-- Ï∞®Ìä∏ -->
                 <highcharts :options="chartOptions" ref="highchart" id="chart-container" style="height: 300px"></highcharts>
                 <!-- <div id="chart-container" style="height: 300px"> -->
-                <!-- «ˆ¿Á∞° -->
+                <!-- ÌòÑÏû¨Í∞Ä -->
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
-                <!-- ¬˜∆Æ∏µÂ ¿¸»Ø -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
-                    <button id="chart-mode">¬˜∆Æ</button>
+                <!-- Ï∞®Ìä∏Î™®Îìú Ï†ÑÌôò -->
+                <router-link :to="`/order/${$route.params.name}/chart`" style="text-decoration: none ">
+                    <button id="chart-mode">Ï∞®Ìä∏</button>
                 </router-link>
-                <!-- ∂Û¿Ã∫Í∏µÂ ¿¸»Ø -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
-                    <button id="live-mode">Live</button>
+                <!-- ÎùºÏù¥Î∏åÎ™®Îìú Ï†ÑÌôò -->
+                <router-link :to="`/order/${$route.params.name }`" style="text-decoration: none ">
+                    <button id="live-mode" class="on" style="color: white; border:none">Live</button>
                 </router-link>
             </div>
             <div id="count">
-                <!-- «√∑ØΩ∫∏∂¿Ã≥ Ω∫ πˆ∆∞, «ˆ¿Á ºˆ -->
+                <!-- ÌîåÎü¨Ïä§ÎßàÏù¥ÎÑàÏä§ Î≤ÑÌäº, ÌòÑÏû¨ Ïàò -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
                 <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
-                <!-- ±∏∏≈ ∆«∏≈ πˆ∆∞ -->
-                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">±∏∏≈</button>
-                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">∆«∏≈</button>
+                <!-- Íµ¨Îß§ ÌåêÎß§ Î≤ÑÌäº -->
+                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">Íµ¨Îß§</button>
+                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">ÌåêÎß§</button>
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
                     <div>
-                        <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">øπ</button>
+                        <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">Ïòà</button>
                         <button @click="onCancel" class="popup-button"
-                            :style="{ 'background-color': '#6F4BFD' }">æ∆¥œø¿</button>
+                            :style="{ 'background-color': '#6F4BFD' }">ÏïÑÎãàÏò§</button>
                     </div>
                 </div>
             </div>
             <div style="height: 155px"></div>
             <div class="btns">
-                <!-- øπºˆ±›, ºˆ¿Õ∑¸ πˆ∆∞ -->
-                <button id="deposit">øπºˆ±›</button>
-                <button id="erate">ºˆ¿Õ∑¸</button>
+                <!-- ÏòàÏàòÍ∏à, ÏàòÏùµÎ•† Î≤ÑÌäº -->
+                <button id="deposit">ÏòàÏàòÍ∏à</button>
+                <button id="erate">ÏàòÏùµÎ•†</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -66,7 +66,6 @@
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
-
 sonificationInit(Highcharts)
 const categories = [];
 const data = [];
@@ -128,7 +127,7 @@ export default {
                     },
                 },
                 title: {
-                    text: "Ω«Ω√∞£ ¬˜∆Æ",
+                    text: "Ïã§ÏãúÍ∞Ñ Ï∞®Ìä∏",
                     style: "10px",
                 },
                 accessibility: {
@@ -168,7 +167,7 @@ export default {
             this.isPopupOpen = true;
         },
         onConfirm() {
-            // ±∏∏≈ »Æ¿Œ ∑Œ¡˜
+            // Íµ¨Îß§ ÌôïÏù∏ Î°úÏßÅ
             this.isPopupOpen = false;
         },
         onCancel() {
@@ -176,35 +175,34 @@ export default {
         },
         livemode() {
             function liveplay() {
-            const test = Highcharts.charts[0];
-            const temp = test.series[0]
-            console.log(temp)
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i == 1) {
-                    clearInterval(interval);
-                    return;
-                }
-                const points = temp.points[temp.points.length-i-1];
-
-                points.sonify({
-                    instruments: [{
-                        instrument: "triangleMajor",
-                        instrumentMapping: {
-                            duration: 200,
-                            pan: "x",
-                            frequency: "y",
-                        },
-                        // Start at C5 note, end at C6
-                        instrumentOptions: {
-                            minFrequency: 520,
-                            maxFrequency: 1050,
-                        }
-                    }]
-                });
-                i++
-            }, 1000)
-                }
+                const test = Highcharts.charts[0];
+                const temp = test.series[0]
+                console.log(temp)
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i == 1) {
+                        clearInterval(interval);
+                        return;
+                    }
+                    const points = temp.points[temp.points.length-i-1];
+                    points.sonify({
+                        instruments: [{
+                            instrument: "triangleMajor",
+                            instrumentMapping: {
+                                duration: 200,
+                                pan: "x",
+                                frequency: "y",
+                            },
+                            // Start at C5 note, end at C6
+                            instrumentOptions: {
+                                minFrequency: 520,
+                                maxFrequency: 1050,
+                            }
+                        }]
+                    });
+                    i++
+                }, 1000)
+            }
             setInterval(() => {
             const temp = Highcharts.charts[0]
             const data_set = temp.series
@@ -216,24 +214,26 @@ export default {
             categories.push(currentTime)
             //   data_set[0].xData = categories
             temp.xAxis[0].categories = categories
-
             for(let i = 0; i < categories.length; i++)
             {
                 data_set[0].data[i].category = categories[i]
             }
             //   data_set[0].data[categories.length - 1].category = categories[categories.length - 1]
-            liveplay()
-                        },1000);
-            
+            liveplay()},1000);
             },
+            reload() {
+                window.location.reload()
+            }
     },
     computed: {
         stocks() {
             return this.$store.state.stocks;
         }
-
-    }
-    }
+    },
+    created() {
+        this.livemode()
+    },
+}
 </script>
 
 <style scoped>
@@ -241,12 +241,10 @@ export default {
     width: 320px;
     height: 568px;
 }
-
 #chart {
     position: relative;
     border: 0.5px solid lightgray
 }
-
 .current-price {
     width: 40px;
     height: 20px;
@@ -256,8 +254,6 @@ export default {
     font-weight: bold;
     font-size: 30px;
 }
-
-
 #chart-mode {
     width: 48px;
     height: 48px;
@@ -294,7 +290,6 @@ export default {
     border-radius: 12px;
     border: 0.5px solid lightgray
 }
-
 #name {
     line-height: 33px;
     float: left;
@@ -302,7 +297,6 @@ export default {
     border: 1px solid;
     padding-left: 5px;
 }
-
 #search-icon {
     width: 25px;
     height: 33px;
@@ -310,11 +304,9 @@ export default {
     margin-top: 10px;
     margin-left: 10px;
 }
-
 #music-icon {
     margin-left: 60px;
 }
-
 #count {
     display: flex;
     justify-content: center;
@@ -322,13 +314,11 @@ export default {
     padding: 10px;
     margin-top: 5px;
 }
-
 .trade {
     display: flex;
     justify-content: center;
     border: none;
 }
-
 .btns {
     display: flex;
     flex-direction: column;
@@ -336,7 +326,6 @@ export default {
     align-items: center;
     border: none;
 }
-
 #deposit {
     border: none;
     margin-bottom: 10px;
@@ -345,7 +334,6 @@ export default {
     height: 80px;
     font-size: 20px;
 }
-
 #erate {
     border: none;
     margin-top: 10px;
@@ -354,7 +342,6 @@ export default {
     height: 80px;
     font-size: 20px;
 }
-
 #voice {
     border: none;
     border-radius: 15px;
@@ -363,17 +350,14 @@ export default {
     margin: 10px 100px 10px 100px;
     font-size: 20px;
 }
-
 #bottom-bar {
     height: 33px;
     width: 320px
 }
-
 #bar img {
     position: absolute;
     width: 320px;
 }
-
 #buy_button {
     border: none;
     width: 120px;
@@ -383,7 +367,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #sell_button {
     border: none;
     width: 120px;
@@ -393,7 +376,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #minusone {
     border-radius: 15px 0 0 15px;
     width: 60px;
@@ -402,7 +384,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 .product {
     width: 320px;
     height: 568px;
@@ -410,7 +391,6 @@ export default {
     box-sizing: border-box;
     border: 1px solid black;
 }
-
 #plusone {
     border-radius: 0 15px 15px 0;
     width: 60px;
@@ -419,7 +399,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #input-count {
     width: 80px;
     height: 50px;
@@ -428,7 +407,6 @@ export default {
     text-align: center;
     color: black;
 }
-
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -440,7 +418,6 @@ export default {
     justify-content: center;
     align-items: center;
 }
-
 .popup {
     width: 300px;
     height: 450px;
@@ -454,7 +431,6 @@ export default {
     align-items: center;
     border-radius: 30px;
 }
-
 .popup-button {
     display: flex;
     flex-direction: column;
@@ -470,4 +446,9 @@ export default {
     font-size: 25px;
     border: none;
     color: white
-}</style>
+}
+.on {
+    background-color: blue;
+    color: white;
+}
+</style>

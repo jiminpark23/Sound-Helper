@@ -20,9 +20,12 @@
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
                 <!-- 일반모드 전환 -->
-                
-                    <!-- <button id="chart-mode">?</button>
-                    <button id="live-mode">?</button> -->
+                <router-link :to="`/order/${$route.params.name}`">
+                    <button id="chart-mode" class="on" style="color: white; border: none">차트</button>
+                </router-link>
+                <router-link :to="`/order/${$route.params.name}/live`">
+                    <button id="live-mode">Live</button>
+                </router-link>
             </div>
             <!-- <div id="count">
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
@@ -57,7 +60,7 @@
 </template>
 
 <script>
-import Highcharts from 'highcharts'
+import Highcharts, { chart } from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
     
@@ -178,7 +181,14 @@ export default {
         onCancel() {
             this.isPopupOpen = false;
         },
-
+        // clickbtn(){
+        //     let chartBtn = document.getElementById("chart-mode")
+        //     if(chartBtn.classList.contains("on")){
+        //         chartBtn.classList.remove('on')
+        //     }else {
+        //         chartBtn.classList.add('on')
+        //     }
+        // },
         drawChart(data, name = "") {
             Highcharts.chart("container", {
                 chart: {
@@ -300,7 +310,9 @@ export default {
             return this.$store.state.stocks;
         }
     },
-    created() { },
+    created() { 
+
+    },
 }
 </script>
 
@@ -428,6 +440,10 @@ export default {
     padding: 16px;
     box-sizing: border-box;
     border: 1px solid black;
+}
+.on {
+    color: white;
+    background-color: blue;
 }
 
 </style>

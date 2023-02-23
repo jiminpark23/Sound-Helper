@@ -31,13 +31,13 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" placeholder="0" v-model="count" >
+                <input id="input-count" type="text" placeholder="0" v-model="count">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
                 <!-- 구매 판매 버튼 -->
-                <button id="buy_button" v-on:click="showBuyPopup(`${stocks[$route.params.name-1].name}`+ count+'주' + (`${stocks[$route.params.name-1].price}` * count) + '원'+'구매하시겠습니까?')" :style="{ 'background-color': '#FB5A6B' }">구매</button>
-                <button id="sell_button" @click="showSellPopup(`${stocks[$route.params.name-1].name}`+ count+'주' + (`${stocks[$route.params.name-1].price}` * count) + '원'+'판매하시겠습니까?')" :style="{ 'background-color': '#6F4BFD' }">판매</button>
+                <button id="buy_button" v-on:click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">구매</button>
+                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">판매</button>
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
@@ -51,8 +51,8 @@
             <div style="height: 155px"></div>
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="deposit" aria-label="예수금을 확인할 수 있는 버튼입니다.">예수금</button>
-                <button id="erate" aria-label="수익률을 확인할 수 있는 버튼입니다.">수익률</button>
+                <button id="deposit" @click="depositComment" aria-label="예수금을 확인할 수 있는 버튼입니다.">예수금</button>
+                <button id="erate" @click="erateComment" aria-label="수익률을 확인할 수 있는 버튼입니다.">수익률</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -152,33 +152,33 @@ export default {
             this.$router.go(-1);
         },
         up() {
-            let count = Number(document.getElementById("input-count").value)
             let plusone = document.getElementById("plusone");
             let up = document.querySelector("#plusone")
-            count = count + 1
-            document.getElementById("input-count").value = count
+            this.count += 1;
             plusone.setAttribute("aria-labelledby", "input-count")
             up.classList.remove("aria-labelledby");
         },
         down() {
-            let count = Number(document.getElementById("input-count").value)
             let minusone = document.getElementById("minusone");
             let down = document.querySelector("#minusone")
             if (count > 0) {
-                count = count - 1
-                document.getElementById("input-count").value = count
+                this.count -= 1;
                 minusone.setAttribute("aria-labelledby", "input-count")
                 down.classList.remove("aria-labelledby");
             }
         },
-        showBuyPopup(msg) {
+        showBuyPopup() {
+            console.log(this.count);
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원'+'구매하시겠습니까?';
             this.isPopupOpen = true;
+            console.log(msg)
             const utterance = new SpeechSynthesisUtterance(msg);
             speechSynthesis.speak(utterance);
             this.count = Number(document.getElementById('input-count').value)
             console.log(this.count)
         },
-        showSellPopup(msg) {
+        showSellPopup() {
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주 ' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원 '+'판매하시겠습니까?';
             this.isPopupOpen = true;
             const utterance = new SpeechSynthesisUtterance(msg);
             speechSynthesis.speak(utterance);
@@ -191,7 +191,16 @@ export default {
         onCancel() {
             this.isPopupOpen = false;
         },
-
+        depositComment() {
+            const msg = `현재 예수금은 150000원 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        },
+        erateComment(){
+            const msg = `수익률은 15% 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        },
         liveplay() {
             const chart = Highcharts.charts[0];
             const series = chart.series[0];
