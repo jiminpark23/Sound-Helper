@@ -63,14 +63,97 @@
 </template>
 
 <script>
+// import Highcharts from 'highcharts'
+// import sonificationInit from 'highcharts/modules/sonification'
+// import { Chart } from 'highcharts-vue' 
+
+
+// sonificationInit(Highcharts)
+// let currentTime = new Date().toTimeString().split(' ')[0];
+// const categories = [currentTime];
+// export default {
+//     name: 'Query',
+//     components: {
+//         highcharts: Chart,
+//     },
+//     data() {
+//         return {
+//             count: 0,
+//             isPopupOpen: false,
+//             data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
+//             state: null,
+//             chartOptions: {
+//                 series: [{
+//                     showInLegend: false,
+//                     data: [1,2,3],
+//                     point: {
+//                         events: {
+//                             click: function () {
+//                                 this.sonify({
+//                                     instruments: [{
+//                                         instrument: "triangleMajor",
+//                                         instrumentMapping: {
+//                                             volume: function (point) {
+//                                                 return point.color === "red" ? 0.2 : 0.8;
+//                                             },
+//                                             duration: 200,
+//                                             pan: "x",
+//                                             frequency: "y",
+//                                         },
+//                                         instrumentOptions: {
+//                                             minFrequency: 520,
+//                                             maxFrequency: 1050,
+//                                         }
+//                                     }
+//                                     ]
+//                                 });
+//                             }
+//                         }
+//                     }
+//                 }],
+//                 xAxis: {
+//                     categories: [new Date().toTimeString().split(" ")[0]],
+//                     labels: {
+//                         style: {
+//                             fontSize: "5px",
+//                         },
+//                     },
+//                     title: {
+//                         text: "Date/time",
+//                         align: "high",
+//                     },
+//                 },
+//                 yAxis: {
+//                     title: {
+//                         text: "price",
+//                         align: "high",
+//                     },
+//                     labels: {
+//                         style: {
+//                             fontSize: "10px",
+//                         },
+//                     },
+//                 },
+//                 title: {
+//                     text: "실시간 차트",
+//                     style: "10px",
+//                 },
+//                 accessibility: {
+//                         enabled: false
+//                 },
+//             }
+//         };
+//     },
+//     mounted() {
+//         this.isloaded = true;
+//     },
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
-import { Chart } from 'highcharts-vue' 
+import { Chart } from 'highcharts-vue'
 
 
 sonificationInit(Highcharts)
-let currentTime = new Date().toTimeString().split(' ')[0];
-const categories = [currentTime];
+var data = [];
 export default {
     name: 'Query',
     components: {
@@ -78,14 +161,14 @@ export default {
     },
     data() {
         return {
-            count: 0,
             isPopupOpen: false,
-            data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
             state: null,
             chartOptions: {
                 series: [{
+
                     showInLegend: false,
-                    data: [1,2,3],
+                    data: data.map(function (item) { return item[1]; }),
+                    categories: data.map(function (item) { return item[0]; }),
                     point: {
                         events: {
                             click: function () {
@@ -93,9 +176,6 @@ export default {
                                     instruments: [{
                                         instrument: "triangleMajor",
                                         instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
                                             duration: 200,
                                             pan: "x",
                                             frequency: "y",
@@ -112,7 +192,7 @@ export default {
                     }
                 }],
                 xAxis: {
-                    categories: [new Date().toTimeString().split(" ")[0]],
+                    categories: data.map(function (item) { return item[0]; }),
                     labels: {
                         style: {
                             fontSize: "5px",
@@ -135,14 +215,15 @@ export default {
                     },
                 },
                 title: {
-                    text: "실시간 차트",
+                    text: "차트분석",
                     style: "10px",
                 },
                 accessibility: {
-                        enabled: false
+                    enabled: true
                 },
             }
         };
+
     },
     mounted() {
         this.isloaded = true;
@@ -201,57 +282,84 @@ export default {
             const utterance = new SpeechSynthesisUtterance(msg);
             speechSynthesis.speak(utterance);
         },
-        liveplay() {
+        play() {
             const chart = Highcharts.charts[0];
-            const series = chart.series[0];
-            const points = series.points;
             console.log(chart)
+            const series = chart.series[0];
+            console.log(series)
+            const points = series.points;
+            console.log(points)
             let i = 0;
             const interval = setInterval(() => {
-                if (i == 1) {
+                if (i >= points.length) {
                     clearInterval(interval);
                     return;
                 }
-                const point = points[points.length - i - 1];
+
+                const point = points[i];
                 point.sonify({
                     instruments: [{
-                        instrument: "triangleMajor",
+                        instrument: 'triangleMajor',
                         instrumentMapping: {
-                            volume: function (point) {
-                                return point.color === 'red' ? 0.2 : 0.8;
-                            },
+                            //   volume: function (point) {
+                            //     return point.color === 'red' ? 0.2 : 0.8;
+                            //   },
                             duration: 200,
-                            pan: "x",
-                            frequency: "y",
+                            pan: 'x',
+                            frequency: 'y'
                         },
                         // Start at C5 note, end at C6
                         instrumentOptions: {
                             minFrequency: 520,
-                            maxFrequency: 1050,
+                            maxFrequency: 1050
                         }
                     }]
-                })
-                i++
-            }, 500)
-        },
-        main(data) {
-            const temp = document.getElementById('container')
-            const chart = Highcharts.charts[temp.getAttribute('data-highcharts-chart')]
-            let currentTime = new Date().toTimeString().split(' ')[0];
-            let randomprice = Math.round(Math.random() * 10);
-            console.log(chart.series[0].data)
-            chart.series[0].addPoint(randomprice)
-            data.categories.push(currentTime)
-            chart.series[0].data[chart.series[0].data.length - 1].category = currentTime
-            liveplay()
-        },
+                });
+
+                i++;
+            }, 500);
+        }
+
     },
     computed: {
         stocks() {
             return this.$store.state.stocks;
         }
     },
-    created() { },
+    mounted() {
+        var data2 = []
+        var categories2 = []
+        const xhr = new XMLHttpRequest();
+        const stock_name = `${this.stocks[this.$route.params.name - 1].name}`
+        console.log(stock_name)
+        var api_url = "https://soundhelper.duckdns.org/stocks/" + stock_name + '/2023-2/';
+        xhr.open('GET', api_url, false);
+        xhr.send(null);
+
+        if (xhr.status === 200) {
+            const db = JSON.parse(xhr.responseText);
+            // JSON 데이터를 이용한 코드
+            for (let i in db.reverse()) {
+                // 30개의 데이터만 가져오기
+                if (i < 30) {
+                    data2.push(Number(db[i].close))
+                    categories2.push(db[i].date)
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        data2 = data2.reverse()
+        categories2 = categories2.reverse()
+        const chart = Highcharts.charts[0];
+
+        for (let i = 0; i < data2.length; i++) {
+            chart.series[0].addPoint([categories2[i], data2[i]])
+        }
+        chart.series[0].xAxis.setCategories(categories2);
+    },
+
 }
 </script>
 

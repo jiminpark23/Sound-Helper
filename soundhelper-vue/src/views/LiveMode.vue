@@ -7,7 +7,7 @@
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
+            <span id="name" style="width: 150px; height: 33px"></span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="reload"></i>
         </div>
@@ -17,8 +17,8 @@
                 <highcharts :options="chartOptions" ref="highchart" id="chart-container" style="height: 300px"></highcharts>
                 <!-- <div id="chart-container" style="height: 300px"> -->
                 <!-- 현재가 -->
-                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
-                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
+                <!-- <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
+                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2> -->
                 <!-- 차트모드 전환 -->
                 <router-link :to="`/order/${$route.params.name}/chart`" style="text-decoration: none ">
                     <button id="chart-mode">차트</button>
@@ -161,10 +161,21 @@ export default {
             }
         },
         showBuyPopup() {
+            console.log(this.count);
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원'+'구매하시겠습니까?';
             this.isPopupOpen = true;
+            console.log(msg)
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
+            console.log(this.count)
         },
         showSellPopup() {
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주 ' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원 '+'판매하시겠습니까?';
             this.isPopupOpen = true;
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
         },
         onConfirm() {
             // 구매 확인 로직
