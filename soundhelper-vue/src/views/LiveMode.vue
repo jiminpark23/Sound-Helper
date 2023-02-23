@@ -20,18 +20,18 @@
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
                 <!-- 차트모드 전환 -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
+                <!-- <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
                     <button id="chart-mode">차트</button>
-                </router-link>
+                </router-link> -->
                 <!-- 라이브모드 전환 -->
-                <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
+                <!-- <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
                     <button id="live-mode">Live</button>
-                </router-link>
+                </router-link> -->
             </div>
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" v-model="count" placeholder="0">
+                <input id="input-count" type="text" v-model="inputcount" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
@@ -41,7 +41,7 @@
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
-                    <div>
+                    <div >
                         <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">예</button>
                         <button @click="onCancel" class="popup-button"
                             :style="{ 'background-color': '#6F4BFD' }">아니오</button>
@@ -78,6 +78,7 @@ export default {
     },
     data() {
         return {
+            inputcount: '',
             isPopupOpen: false,
             data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
             state: null,
@@ -172,6 +173,8 @@ export default {
         },
         showBuyPopup() {
             this.isPopupOpen = true;
+            inputcount = new SpeechSynthesisUtterance(this.inputcount);
+            window.speechSynthsis.speak(inputcount)
         },
         showSellPopup() {
             this.isPopupOpen = true;
