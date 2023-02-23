@@ -196,7 +196,7 @@ export default {
                     height: 200 + 'px',
                 },
                 title: {
-                    text: "실시간 차트",
+                    text: "차트",
                     style: "10px",
                 },
                 accessibility: {

@@ -31,7 +31,7 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" v-model="count" placeholder="0">
+                <input id="input-count" type="text" v-model="inputcount" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
@@ -41,7 +41,7 @@
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
-                    <div>
+                    <div >
                         <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">예</button>
                         <button @click="onCancel" class="popup-button"
                             :style="{ 'background-color': '#6F4BFD' }">아니오</button>
@@ -162,6 +162,8 @@ export default {
         },
         showBuyPopup() {
             this.isPopupOpen = true;
+            inputcount = new SpeechSynthesisUtterance(this.inputcount);
+            window.speechSynthsis.speak(inputcount)
         },
         showSellPopup() {
             this.isPopupOpen = true;
