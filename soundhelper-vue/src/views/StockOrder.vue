@@ -7,7 +7,7 @@
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;" aria-label="주식목록페이지로 돌아가는 버튼입니다.">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
+            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name }}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
@@ -31,13 +31,13 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" v-model="count" placeholder="0">
+                <input id="input-count" type="text" placeholder="0" v-model="count" >
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
                 <!-- 구매 판매 버튼 -->
-                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">구매</button>
-                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">판매</button>
+                <button id="buy_button" v-on:click="showBuyPopup(`${stocks[$route.params.name-1].name}`+ count+'주' + (`${stocks[$route.params.name-1].price}` * count) + '원'+'구매하시겠습니까?')" :style="{ 'background-color': '#FB5A6B' }">구매</button>
+                <button id="sell_button" @click="showSellPopup(`${stocks[$route.params.name-1].name}`+ count+'주' + (`${stocks[$route.params.name-1].price}` * count) + '원'+'판매하시겠습니까?')" :style="{ 'background-color': '#6F4BFD' }">판매</button>
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
@@ -51,8 +51,8 @@
             <div style="height: 155px"></div>
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="deposit">예수금</button>
-                <button id="erate">수익률</button>
+                <button id="deposit" aria-label="예수금을 확인할 수 있는 버튼입니다.">예수금</button>
+                <button id="erate" aria-label="수익률을 확인할 수 있는 버튼입니다.">수익률</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -67,10 +67,10 @@ import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
 
+
 sonificationInit(Highcharts)
 let currentTime = new Date().toTimeString().split(' ')[0];
 const categories = [currentTime];
-
 export default {
     name: 'Query',
     components: {
@@ -78,6 +78,7 @@ export default {
     },
     data() {
         return {
+            count: 0,
             isPopupOpen: false,
             data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
             state: null,
@@ -170,11 +171,18 @@ export default {
                 down.classList.remove("aria-labelledby");
             }
         },
-        showBuyPopup() {
+        showBuyPopup(msg) {
             this.isPopupOpen = true;
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
+            console.log(this.count)
         },
-        showSellPopup() {
+        showSellPopup(msg) {
             this.isPopupOpen = true;
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
         },
         onConfirm() {
             // 구매 확인 로직
