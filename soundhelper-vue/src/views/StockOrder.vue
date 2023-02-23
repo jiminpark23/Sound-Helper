@@ -8,8 +8,8 @@
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;" aria-label="주식목록페이지로 돌아가는 버튼입니다.">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name }}</span>
-            <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
+            <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" style="margin-top: 0" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/> </svg>
+            <svg id="music-icon" @click="play" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16"> <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z"/> <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z"/> <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4V2.905z"/> </svg>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
@@ -31,7 +31,7 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" placeholder="0" v-model="count">
+                <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
@@ -65,12 +65,11 @@
 <script>
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
-import { Chart } from 'highcharts-vue' 
+import { Chart } from 'highcharts-vue'
 
 
 sonificationInit(Highcharts)
-let currentTime = new Date().toTimeString().split(' ')[0];
-const categories = [currentTime];
+var data = [];
 export default {
     name: 'Query',
     components: {
@@ -80,12 +79,13 @@ export default {
         return {
             count: 0,
             isPopupOpen: false,
-            data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
             state: null,
             chartOptions: {
                 series: [{
+
                     showInLegend: false,
-                    data: [1,2,3],
+                    data: data.map(function (item) { return item[1]; }),
+                    categories: data.map(function (item) { return item[0]; }),
                     point: {
                         events: {
                             click: function () {
@@ -93,9 +93,6 @@ export default {
                                     instruments: [{
                                         instrument: "triangleMajor",
                                         instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
                                             duration: 200,
                                             pan: "x",
                                             frequency: "y",
@@ -112,7 +109,7 @@ export default {
                     }
                 }],
                 xAxis: {
-                    categories: [new Date().toTimeString().split(" ")[0]],
+                    categories: data.map(function (item) { return item[0]; }),
                     labels: {
                         style: {
                             fontSize: "5px",
@@ -135,14 +132,15 @@ export default {
                     },
                 },
                 title: {
-                    text: "차트",
+                    text: "차트분석",
                     style: "10px",
                 },
                 accessibility: {
-                        enabled: false
+                    enabled: true
                 },
             }
         };
+
     },
     mounted() {
         this.isloaded = true;
@@ -157,11 +155,13 @@ export default {
             this.count += 1;
             plusone.setAttribute("aria-labelledby", "input-count")
             up.classList.remove("aria-labelledby");
+
+           
         },
         down() {
             let minusone = document.getElementById("minusone");
             let down = document.querySelector("#minusone")
-            if (count > 0) {
+            if (this.count > 0) {
                 this.count -= 1;
                 minusone.setAttribute("aria-labelledby", "input-count")
                 down.classList.remove("aria-labelledby");
@@ -201,57 +201,84 @@ export default {
             const utterance = new SpeechSynthesisUtterance(msg);
             speechSynthesis.speak(utterance);
         },
-        liveplay() {
+        play() {
             const chart = Highcharts.charts[0];
-            const series = chart.series[0];
-            const points = series.points;
             console.log(chart)
+            const series = chart.series[0];
+            console.log(series)
+            const points = series.points;
+            console.log(points)
             let i = 0;
             const interval = setInterval(() => {
-                if (i == 1) {
+                if (i >= points.length) {
                     clearInterval(interval);
                     return;
                 }
-                const point = points[points.length - i - 1];
+
+                const point = points[i];
                 point.sonify({
                     instruments: [{
-                        instrument: "triangleMajor",
+                        instrument: 'triangleMajor',
                         instrumentMapping: {
-                            volume: function (point) {
-                                return point.color === 'red' ? 0.2 : 0.8;
-                            },
+                            //   volume: function (point) {
+                            //     return point.color === 'red' ? 0.2 : 0.8;
+                            //   },
                             duration: 200,
-                            pan: "x",
-                            frequency: "y",
+                            pan: 'x',
+                            frequency: 'y'
                         },
                         // Start at C5 note, end at C6
                         instrumentOptions: {
                             minFrequency: 520,
-                            maxFrequency: 1050,
+                            maxFrequency: 1050
                         }
                     }]
-                })
-                i++
-            }, 500)
-        },
-        main(data) {
-            const temp = document.getElementById('container')
-            const chart = Highcharts.charts[temp.getAttribute('data-highcharts-chart')]
-            let currentTime = new Date().toTimeString().split(' ')[0];
-            let randomprice = Math.round(Math.random() * 10);
-            console.log(chart.series[0].data)
-            chart.series[0].addPoint(randomprice)
-            data.categories.push(currentTime)
-            chart.series[0].data[chart.series[0].data.length - 1].category = currentTime
-            liveplay()
-        },
+                });
+
+                i++;
+            }, 500);
+        }
+
     },
     computed: {
         stocks() {
             return this.$store.state.stocks;
         }
     },
-    created() { },
+    mounted() {
+        var data2 = []
+        var categories2 = []
+        const xhr = new XMLHttpRequest();
+        const stock_name = `${this.stocks[this.$route.params.name - 1].name}`
+        console.log(stock_name)
+        var api_url = "https://soundhelper.duckdns.org/stocks/" + stock_name + '/2023-2/';
+        xhr.open('GET', api_url, false);
+        xhr.send(null);
+
+        if (xhr.status === 200) {
+            const db = JSON.parse(xhr.responseText);
+            // JSON 데이터를 이용한 코드
+            for (let i in db.reverse()) {
+                // 30개의 데이터만 가져오기
+                if (i < 30) {
+                    data2.push(Number(db[i].close))
+                    categories2.push(db[i].date)
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        data2 = data2.reverse()
+        categories2 = categories2.reverse()
+        const chart = Highcharts.charts[0];
+
+        for (let i = 0; i < data2.length; i++) {
+            chart.series[0].addPoint([categories2[i], data2[i]])
+        }
+        chart.series[0].xAxis.setCategories(categories2);
+    },
+
 }
 </script>
 
@@ -489,4 +516,9 @@ export default {
     font-size: 25px;
     border: none;
     color: white
-}</style>
+}
+#music-icon {
+    width: 20px
+}
+
+</style>

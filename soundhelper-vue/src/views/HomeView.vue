@@ -7,7 +7,7 @@
   </div>
   <div class="blue-screen" v-show="showBlueScreen" >
       <div class="progressBar">
-        <div id="bar" class="innerbar"></div>
+        <!-- <div id="bar" class="innerbar"></div> -->
       </div>
   </div>
 </template>
@@ -100,7 +100,7 @@ export default {
   background-image: url("../assets/alpha.jpg")
 }
 
-.progressBar {
+/* .progressBar {
   max-width: 280px;
   width: 90%;
   margin: 10px auto;
@@ -109,7 +109,7 @@ export default {
 
   border-radius: 3px;
   background: linear-gradient(#503BD9, #503BD9);
-}
+} */
 
 .innerbar {
   max-width: 280px;
