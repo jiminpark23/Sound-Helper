@@ -8,17 +8,13 @@
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px"></span>
-            <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="reload"></i>
+            <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" style="margin-top: 0" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/> </svg>
+            <svg id="music-icon" @click="play" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16"> <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z"/> <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z"/> <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4V2.905z"/> </svg>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
                 <!-- 차트 -->
                 <highcharts :options="chartOptions" ref="highchart" id="chart-container" style="height: 300px"></highcharts>
-                <!-- <div id="chart-container" style="height: 300px"> -->
-                <!-- 현재가 -->
-                <!-- <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
-                <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2> -->
                 <!-- 차트모드 전환 -->
                 <router-link :to="`/order/${$route.params.name}/chart`" style="text-decoration: none ">
                     <button id="chart-mode">차트</button>
@@ -41,7 +37,7 @@
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
-                    <div>
+                    <div >
                         <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">예</button>
                         <button @click="onCancel" class="popup-button"
                             :style="{ 'background-color': '#6F4BFD' }">아니오</button>
@@ -51,8 +47,8 @@
             <div style="height: 155px"></div>
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="deposit">예수금</button>
-                <button id="erate">수익률</button>
+                <button id="deposit" @click="depositComment" aria-label="예수금을 확인할 수 있는 버튼입니다.">예수금</button>
+                <button id="erate" @click="erateComment" aria-label="수익률을 확인할 수 있는 버튼입니다.">수익률</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -76,6 +72,7 @@ export default {
     },
     data() {
         return {
+            count: 0,
             chartOptions: {
                 series: [{
                     showInLegend: false,
@@ -141,21 +138,21 @@ export default {
             this.$router.go(-1);
         },
         up() {
-            let count = Number(document.getElementById("input-count").value)
+            // let count = Number(document.getElementById("input-count").value)
             let plusone = document.getElementById("plusone");
             let up = document.querySelector("#plusone")
-            count = count + 1
+            this.count += 1;
             document.getElementById("input-count").value = count
             plusone.setAttribute("aria-labelledby", "input-count")
             up.classList.remove("aria-labelledby");
         },
         down() {
-            let count = Number(document.getElementById("input-count").value)
+            // let count = Number(document.getElementById("input-count").value)
             let minusone = document.getElementById("minusone");
             let down = document.querySelector("#minusone")
-            if (count > 0) {
-                count = count - 1
-                document.getElementById("input-count").value = count
+            if (this.count > 0) {
+                this.count -= 1;
+                // document.getElementById("input-count").value = count
                 minusone.setAttribute("aria-labelledby", "input-count")
                 down.classList.remove("aria-labelledby");
             }
@@ -164,11 +161,9 @@ export default {
             console.log(this.count);
             const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원'+'구매하시겠습니까?';
             this.isPopupOpen = true;
-            console.log(msg)
             const utterance = new SpeechSynthesisUtterance(msg);
             speechSynthesis.speak(utterance);
             this.count = Number(document.getElementById('input-count').value)
-            console.log(this.count)
         },
         showSellPopup() {
             const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주 ' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원 '+'판매하시겠습니까?';
@@ -183,6 +178,16 @@ export default {
         },
         onCancel() {
             this.isPopupOpen = false;
+        },
+        depositComment() {
+            const msg = `현재 예수금은 150000원 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        },
+        erateComment(){
+            const msg = `수익률은 15% 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
         },
         livemode() {
             function liveplay() {

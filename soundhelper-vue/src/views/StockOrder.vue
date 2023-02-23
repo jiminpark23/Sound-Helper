@@ -3,13 +3,13 @@
         <div>
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
-        <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
+        <div style="height: 33px; margin-bottom: 10px;">
             <!-- 상단 바, 음표버튼 -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;" aria-label="주식목록페이지로 돌아가는 버튼입니다.">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name }}</span>
-            <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
+            <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" style="margin-top: 0" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/> </svg>
+            <svg id="music-icon" @click="play" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16"> <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z"/> <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z"/> <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4V2.905z"/> </svg>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
@@ -31,7 +31,7 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" placeholder="0" v-model="count">
+                <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
@@ -63,90 +63,6 @@
 </template>
 
 <script>
-// import Highcharts from 'highcharts'
-// import sonificationInit from 'highcharts/modules/sonification'
-// import { Chart } from 'highcharts-vue' 
-
-
-// sonificationInit(Highcharts)
-// let currentTime = new Date().toTimeString().split(' ')[0];
-// const categories = [currentTime];
-// export default {
-//     name: 'Query',
-//     components: {
-//         highcharts: Chart,
-//     },
-//     data() {
-//         return {
-//             count: 0,
-//             isPopupOpen: false,
-//             data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
-//             state: null,
-//             chartOptions: {
-//                 series: [{
-//                     showInLegend: false,
-//                     data: [1,2,3],
-//                     point: {
-//                         events: {
-//                             click: function () {
-//                                 this.sonify({
-//                                     instruments: [{
-//                                         instrument: "triangleMajor",
-//                                         instrumentMapping: {
-//                                             volume: function (point) {
-//                                                 return point.color === "red" ? 0.2 : 0.8;
-//                                             },
-//                                             duration: 200,
-//                                             pan: "x",
-//                                             frequency: "y",
-//                                         },
-//                                         instrumentOptions: {
-//                                             minFrequency: 520,
-//                                             maxFrequency: 1050,
-//                                         }
-//                                     }
-//                                     ]
-//                                 });
-//                             }
-//                         }
-//                     }
-//                 }],
-//                 xAxis: {
-//                     categories: [new Date().toTimeString().split(" ")[0]],
-//                     labels: {
-//                         style: {
-//                             fontSize: "5px",
-//                         },
-//                     },
-//                     title: {
-//                         text: "Date/time",
-//                         align: "high",
-//                     },
-//                 },
-//                 yAxis: {
-//                     title: {
-//                         text: "price",
-//                         align: "high",
-//                     },
-//                     labels: {
-//                         style: {
-//                             fontSize: "10px",
-//                         },
-//                     },
-//                 },
-//                 title: {
-//                     text: "실시간 차트",
-//                     style: "10px",
-//                 },
-//                 accessibility: {
-//                         enabled: false
-//                 },
-//             }
-//         };
-//     },
-//     mounted() {
-//         this.isloaded = true;
-//     },
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue'
@@ -161,6 +77,7 @@ export default {
     },
     data() {
         return {
+            count: 0,
             isPopupOpen: false,
             state: null,
             chartOptions: {
@@ -238,11 +155,13 @@ export default {
             this.count += 1;
             plusone.setAttribute("aria-labelledby", "input-count")
             up.classList.remove("aria-labelledby");
+
+           
         },
         down() {
             let minusone = document.getElementById("minusone");
             let down = document.querySelector("#minusone")
-            if (count > 0) {
+            if (this.count > 0) {
                 this.count -= 1;
                 minusone.setAttribute("aria-labelledby", "input-count")
                 down.classList.remove("aria-labelledby");
@@ -597,4 +516,9 @@ export default {
     font-size: 25px;
     border: none;
     color: white
-}</style>
+}
+#music-icon {
+    width: 20px
+}
+
+</style>
