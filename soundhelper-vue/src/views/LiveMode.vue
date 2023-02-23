@@ -9,7 +9,7 @@
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
+            <i class="fa-solid fa-music" id="music-icon" @click="reload"></i>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
@@ -20,13 +20,13 @@
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
                 <!-- 차트모드 전환 -->
-                <!-- <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
+                <router-link :to="`/order/${$route.params.name}/chart`" style="text-decoration: none ">
                     <button id="chart-mode">차트</button>
-                </router-link> -->
+                </router-link>
                 <!-- 라이브모드 전환 -->
-                <!-- <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
-                    <button id="live-mode">Live</button>
-                </router-link> -->
+                <router-link :to="`/order/${$route.params.name }`" style="text-decoration: none ">
+                    <button id="live-mode" class="on" style="color: white; border:none">Live</button>
+                </router-link>
             </div>
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
@@ -66,11 +66,9 @@
 import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
-
 sonificationInit(Highcharts)
-let currentTime = new Date().toTimeString().split(' ')[0];
-const categories = [currentTime];
-
+const categories = [];
+const data = [];
 export default {
     name: 'Query',
     components: {
@@ -78,14 +76,11 @@ export default {
     },
     data() {
         return {
-            inputcount: '',
-            isPopupOpen: false,
-            data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
-            state: null,
             chartOptions: {
                 series: [{
                     showInLegend: false,
-                    data: [1,2,3],
+                    data: data,
+                    categories : categories,
                     point: {
                         events: {
                             click: function () {
@@ -93,9 +88,6 @@ export default {
                                     instruments: [{
                                         instrument: "triangleMajor",
                                         instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
                                             duration: 200,
                                             pan: "x",
                                             frequency: "y",
@@ -112,7 +104,7 @@ export default {
                     }
                 }],
                 xAxis: {
-                    categories: [new Date().toTimeString().split(" ")[0]],
+                    categories: categories,
                     labels: {
                         style: {
                             fontSize: "5px",
@@ -139,13 +131,10 @@ export default {
                     style: "10px",
                 },
                 accessibility: {
-                        enabled: false
+                        enabled: true
                 },
             }
         };
-    },
-    mounted() {
-        this.isloaded = true;
     },
     methods: {
         goToStockList() {
@@ -186,58 +175,66 @@ export default {
         onCancel() {
             this.isPopupOpen = false;
         },
-
-        liveplay() {
-            const chart = Highcharts.charts[0];
-            const series = chart.series[0];
-            const points = series.points;
-            console.log(chart)
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i == 1) {
-                    clearInterval(interval);
-                    return;
-                }
-                const point = points[points.length - i - 1];
-                point.sonify({
-                    instruments: [{
-                        instrument: "triangleMajor",
-                        instrumentMapping: {
-                            volume: function (point) {
-                                return point.color === 'red' ? 0.2 : 0.8;
+        livemode() {
+            function liveplay() {
+                const test = Highcharts.charts[0];
+                const temp = test.series[0]
+                console.log(temp)
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i == 1) {
+                        clearInterval(interval);
+                        return;
+                    }
+                    const points = temp.points[temp.points.length-i-1];
+                    points.sonify({
+                        instruments: [{
+                            instrument: "triangleMajor",
+                            instrumentMapping: {
+                                duration: 200,
+                                pan: "x",
+                                frequency: "y",
                             },
-                            duration: 200,
-                            pan: "x",
-                            frequency: "y",
-                        },
-                        // Start at C5 note, end at C6
-                        instrumentOptions: {
-                            minFrequency: 520,
-                            maxFrequency: 1050,
-                        }
-                    }]
-                })
-                i++
-            }, 500)
-        },
-        main(data) {
-            const temp = document.getElementById('container')
-            const chart = Highcharts.charts[temp.getAttribute('data-highcharts-chart')]
+                            // Start at C5 note, end at C6
+                            instrumentOptions: {
+                                minFrequency: 520,
+                                maxFrequency: 1050,
+                            }
+                        }]
+                    });
+                    i++
+                }, 1000)
+            }
+            setInterval(() => {
+            const temp = Highcharts.charts[0]
+            const data_set = temp.series
+            //   console.log(data_set)
             let currentTime = new Date().toTimeString().split(' ')[0];
             let randomprice = Math.round(Math.random() * 10);
-            console.log(chart.series[0].data)
-            chart.series[0].addPoint(randomprice)
-            data.categories.push(currentTime)
-            chart.series[0].data[chart.series[0].data.length - 1].category = currentTime
-            liveplay()
-        },
+            data_set[0].addPoint(randomprice)
+            //   console.log(temp)
+            categories.push(currentTime)
+            //   data_set[0].xData = categories
+            temp.xAxis[0].categories = categories
+            for(let i = 0; i < categories.length; i++)
+            {
+                data_set[0].data[i].category = categories[i]
+            }
+            //   data_set[0].data[categories.length - 1].category = categories[categories.length - 1]
+            liveplay()},1000);
+            },
+            reload() {
+                window.location.reload()
+            }
     },
     computed: {
         stocks() {
             return this.$store.state.stocks;
         }
     },
-    created() { },
+    created() {
+        this.livemode()
+    },
 }
 </script>
 
@@ -246,12 +243,10 @@ export default {
     width: 320px;
     height: 568px;
 }
-
 #chart {
     position: relative;
     border: 0.5px solid lightgray
 }
-
 .current-price {
     width: 40px;
     height: 20px;
@@ -261,8 +256,6 @@ export default {
     font-weight: bold;
     font-size: 30px;
 }
-
-
 #chart-mode {
     width: 48px;
     height: 48px;
@@ -299,7 +292,6 @@ export default {
     border-radius: 12px;
     border: 0.5px solid lightgray
 }
-
 #name {
     line-height: 33px;
     float: left;
@@ -307,7 +299,6 @@ export default {
     border: 1px solid;
     padding-left: 5px;
 }
-
 #search-icon {
     width: 25px;
     height: 33px;
@@ -315,11 +306,9 @@ export default {
     margin-top: 10px;
     margin-left: 10px;
 }
-
 #music-icon {
     margin-left: 60px;
 }
-
 #count {
     display: flex;
     justify-content: center;
@@ -327,13 +316,11 @@ export default {
     padding: 10px;
     margin-top: 5px;
 }
-
 .trade {
     display: flex;
     justify-content: center;
     border: none;
 }
-
 .btns {
     display: flex;
     flex-direction: column;
@@ -341,7 +328,6 @@ export default {
     align-items: center;
     border: none;
 }
-
 #deposit {
     border: none;
     margin-bottom: 10px;
@@ -350,7 +336,6 @@ export default {
     height: 80px;
     font-size: 20px;
 }
-
 #erate {
     border: none;
     margin-top: 10px;
@@ -359,7 +344,6 @@ export default {
     height: 80px;
     font-size: 20px;
 }
-
 #voice {
     border: none;
     border-radius: 15px;
@@ -368,17 +352,14 @@ export default {
     margin: 10px 100px 10px 100px;
     font-size: 20px;
 }
-
 #bottom-bar {
     height: 33px;
     width: 320px
 }
-
 #bar img {
     position: absolute;
     width: 320px;
 }
-
 #buy_button {
     border: none;
     width: 120px;
@@ -388,7 +369,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #sell_button {
     border: none;
     width: 120px;
@@ -398,7 +378,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #minusone {
     border-radius: 15px 0 0 15px;
     width: 60px;
@@ -407,7 +386,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 .product {
     width: 320px;
     height: 568px;
@@ -415,7 +393,6 @@ export default {
     box-sizing: border-box;
     border: 1px solid black;
 }
-
 #plusone {
     border-radius: 0 15px 15px 0;
     width: 60px;
@@ -424,7 +401,6 @@ export default {
     font-size: 20px;
     color: white;
 }
-
 #input-count {
     width: 80px;
     height: 50px;
@@ -433,7 +409,6 @@ export default {
     text-align: center;
     color: black;
 }
-
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -445,7 +420,6 @@ export default {
     justify-content: center;
     align-items: center;
 }
-
 .popup {
     width: 300px;
     height: 450px;
@@ -459,7 +433,6 @@ export default {
     align-items: center;
     border-radius: 30px;
 }
-
 .popup-button {
     display: flex;
     flex-direction: column;
@@ -475,4 +448,9 @@ export default {
     font-size: 25px;
     border: none;
     color: white
-}</style>
+}
+.on {
+    background-color: blue;
+    color: white;
+}
+</style>
