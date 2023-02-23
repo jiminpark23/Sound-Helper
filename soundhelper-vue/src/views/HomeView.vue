@@ -7,7 +7,7 @@
   </div>
   <div class="blue-screen" v-show="showBlueScreen" >
       <div class="progressBar">
-        <div id="bar" class="innerbar"></div>
+        <!-- <div id="bar" class="innerbar"></div> -->
       </div>
   </div>
 </template>
@@ -26,36 +26,36 @@ export default {
     setTimeout(() => {
       this.showBlueScreen = false;
     }, 1300);
-    this.start()
+    // this.start()
   },
   methods: {
     goToStockList() {
       this.$router.push('/stocks')
     },
-    start() {
-      this.timeBegan = new Date();
-      let el = document.getElementById("bar");
-      el.style.width = "0%";
+    // start() {
+    //   this.timeBegan = new Date();
+    //   let el = document.getElementById("bar");
+    //   el.style.width = "0%";
 
-      if (this.progressbarHandler == null) {
-        this.progressbarHandler = setInterval(this.updateProgressbar, 15);
-      }
-    },
-    updateProgressbar() {
-      var currentTime = new Date(),
-        timeElapsed = new Date(
-          this.countDownTime - (currentTime - this.timeBegan)
-        );
-      let time = currentTime - this.timeBegan;
-      let el = document.getElementById("bar");
-      let width = (time / this.MAX_TIME) * 100 + "%";
-      width = parseFloat(width).toFixed(2);
-      if (width > 100) width = 100;
+    //   if (this.progressbarHandler == null) {
+    //     this.progressbarHandler = setInterval(this.updateProgressbar, 15);
+    //   }
+    // },
+    // updateProgressbar() {
+    //   var currentTime = new Date(),
+    //     timeElapsed = new Date(
+    //       this.countDownTime - (currentTime - this.timeBegan)
+    //     );
+    //   let time = currentTime - this.timeBegan;
+    //   let el = document.getElementById("bar");
+    //   let width = (time / this.MAX_TIME) * 100 + "%";
+    //   width = parseFloat(width).toFixed(2);
+    //   if (width > 100) width = 100;
 
-      //console.log("width" + width);
-      let widthStr = width + "%";
-      el.style.width = widthStr;
-    },
+    //   //console.log("width" + width);
+    //   let widthStr = width + "%";
+    //   el.style.width = widthStr;
+    // },
   }
 }
 </script>
@@ -100,7 +100,7 @@ export default {
   background-image: url("../assets/alpha.jpg")
 }
 
-.progressBar {
+/* .progressBar {
   max-width: 280px;
   width: 90%;
   margin: 10px auto;
@@ -109,7 +109,7 @@ export default {
 
   border-radius: 3px;
   background: linear-gradient(#503BD9, #503BD9);
-}
+} */
 
 .innerbar {
   max-width: 280px;
