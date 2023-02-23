@@ -31,7 +31,7 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" v-model="inputcount" placeholder="0">
+                <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
