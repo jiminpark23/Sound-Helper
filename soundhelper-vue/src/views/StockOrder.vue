@@ -5,9 +5,9 @@
         </div>
         <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
             <!-- 상단 바, 음표버튼 -->
-            <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
+            <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;" aria-label="주식목록페이지로 돌아가는 버튼입니다.">&lt;</button>
             <router-view />
-            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
+            <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name }}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
             <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
         </div>
@@ -21,7 +21,7 @@
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
                 <!-- 차트모드 전환 -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
-                    <button id="chart-mode">차트</button>
+                    <button id="chart-mode" aria-label="차트분석을 하는 페이지로 이동하는 버튼입니다.">차트</button>
                 </router-link>
                 <!-- 라이브모드 전환 -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
@@ -31,12 +31,12 @@
             <div id="count">
                 <!-- 플러스마이너스 버튼, 현재 수 -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
-                <input id="input-count" type="text" v-model="count" placeholder="0">
+                <input id="input-count" type="text" placeholder="0" v-model="count">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
                 <!-- 구매 판매 버튼 -->
-                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">구매</button>
+                <button id="buy_button" v-on:click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">구매</button>
                 <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">판매</button>
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
@@ -51,8 +51,8 @@
             <div style="height: 155px"></div>
             <div class="btns">
                 <!-- 예수금, 수익률 버튼 -->
-                <button id="deposit">예수금</button>
-                <button id="erate">수익률</button>
+                <button id="deposit" @click="depositComment" aria-label="예수금을 확인할 수 있는 버튼입니다.">예수금</button>
+                <button id="erate" @click="erateComment" aria-label="수익률을 확인할 수 있는 버튼입니다.">수익률</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -67,10 +67,10 @@ import Highcharts from 'highcharts'
 import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
 
+
 sonificationInit(Highcharts)
 let currentTime = new Date().toTimeString().split(' ')[0];
 const categories = [currentTime];
-
 export default {
     name: 'Query',
     components: {
@@ -78,6 +78,7 @@ export default {
     },
     data() {
         return {
+            count: 0,
             isPopupOpen: false,
             data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
             state: null,
@@ -151,30 +152,37 @@ export default {
             this.$router.go(-1);
         },
         up() {
-            let count = Number(document.getElementById("input-count").value)
             let plusone = document.getElementById("plusone");
             let up = document.querySelector("#plusone")
-            count = count + 1
-            document.getElementById("input-count").value = count
+            this.count += 1;
             plusone.setAttribute("aria-labelledby", "input-count")
             up.classList.remove("aria-labelledby");
         },
         down() {
-            let count = Number(document.getElementById("input-count").value)
             let minusone = document.getElementById("minusone");
             let down = document.querySelector("#minusone")
             if (count > 0) {
-                count = count - 1
-                document.getElementById("input-count").value = count
+                this.count -= 1;
                 minusone.setAttribute("aria-labelledby", "input-count")
                 down.classList.remove("aria-labelledby");
             }
         },
         showBuyPopup() {
+            console.log(this.count);
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원'+'구매하시겠습니까?';
             this.isPopupOpen = true;
+            console.log(msg)
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
+            console.log(this.count)
         },
         showSellPopup() {
+            const msg = `${this.stocks[this.$route.params.name-1].name}`+ (this.count)+'주 ' + (`${this.stocks[this.$route.params.name-1].price}` * (this.count)) + '원 '+'판매하시겠습니까?';
             this.isPopupOpen = true;
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+            this.count = Number(document.getElementById('input-count').value)
         },
         onConfirm() {
             // 구매 확인 로직
@@ -183,7 +191,16 @@ export default {
         onCancel() {
             this.isPopupOpen = false;
         },
-
+        depositComment() {
+            const msg = `현재 예수금은 150000원 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        },
+        erateComment(){
+            const msg = `수익률은 15% 입니다.`
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        },
         liveplay() {
             const chart = Highcharts.charts[0];
             const series = chart.series[0];
