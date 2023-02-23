@@ -4,55 +4,55 @@
             <img src="../assets/top_bar.png" style="height:32px; width: 320px">
         </div>
         <div id="top-bar" style="height: 33px; margin-bottom: 10px;">
-            <!-- ìƒë‹¨ ë°”, ìŒí‘œë²„íŠ¼ -->
+            <!-- »ó´Ü ¹Ù, À½Ç¥¹öÆ° -->
             <button @click='goToStockList' style="width:32px; height: 33px; float:left; border: none;">&lt;</button>
             <router-view />
             <span id="name" style="width: 150px; height: 33px">{{ stocks[$route.params.name-1].name}}</span>
             <i class="fa-solid fa-magnifying-glass" id="search-icon"></i>
-            <i class="fa-solid fa-music" id="music-icon" @click="play"></i>
+            <i class="fa-solid fa-music" id="music-icon" @click="livemode"></i>
         </div>
         <div style="overflow: scroll; height: 460px">
             <div id="chart" >
-                <!-- ì°¨íŠ¸ -->
+                <!-- Â÷Æ® -->
                 <highcharts :options="chartOptions" ref="highchart" id="chart-container" style="height: 300px"></highcharts>
                 <!-- <div id="chart-container" style="height: 300px"> -->
-                <!-- í˜„ì¬ê°€ -->
+                <!-- ÇöÀç°¡ -->
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate < 0" style="color: blue">{{stocks[$route.params.name-1].price}}</h2>
                 <h2 class="current-price" v-if="stocks[$route.params.name-1].fluctuationRate > 0" style="color: red">{{stocks[$route.params.name-1].price}}</h2>
-                <!-- ì°¨íŠ¸ëª¨ë“œ ì „í™˜ -->
+                <!-- Â÷Æ®¸ğµå ÀüÈ¯ -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/chart`" style="text-decoration: none ">
-                    <button id="chart-mode">ì°¨íŠ¸</button>
+                    <button id="chart-mode">Â÷Æ®</button>
                 </router-link>
-                <!-- ë¼ì´ë¸Œëª¨ë“œ ì „í™˜ -->
+                <!-- ¶óÀÌºê¸ğµå ÀüÈ¯ -->
                 <router-link :to="`/order/${stocks[$route.params.name-1].id }/live`" style="text-decoration: none ">
                     <button id="live-mode">Live</button>
                 </router-link>
             </div>
             <div id="count">
-                <!-- í”ŒëŸ¬ìŠ¤ë§ˆì´ë„ˆìŠ¤ ë²„íŠ¼, í˜„ì¬ ìˆ˜ -->
+                <!-- ÇÃ·¯½º¸¶ÀÌ³Ê½º ¹öÆ°, ÇöÀç ¼ö -->
                 <button id="minusone" :style="{ 'background-color': '#FB5A6B' }" @click="down">-</button>
                 <input id="input-count" type="text" v-model="count" placeholder="0">
                 <button id="plusone" :style="{ 'background-color': '#6F4BFD' }" @click="up">+</button>
             </div>
             <div class="trade">
-                <!-- êµ¬ë§¤ íŒë§¤ ë²„íŠ¼ -->
-                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">êµ¬ë§¤</button>
-                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">íŒë§¤</button>
+                <!-- ±¸¸Å ÆÇ¸Å ¹öÆ° -->
+                <button id="buy_button" @click="showBuyPopup" :style="{ 'background-color': '#FB5A6B' }">±¸¸Å</button>
+                <button id="sell_button" @click="showSellPopup" :style="{ 'background-color': '#6F4BFD' }">ÆÇ¸Å</button>
             </div>
             <div class="popup-overlay" v-if="isPopupOpen">
                 <div class="popup">
                     <div>
-                        <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">ì˜ˆ</button>
+                        <button @click="onConfirm" class="popup-button" :style="{ 'background-color': '#FB5A6B' }">¿¹</button>
                         <button @click="onCancel" class="popup-button"
-                            :style="{ 'background-color': '#6F4BFD' }">ì•„ë‹ˆì˜¤</button>
+                            :style="{ 'background-color': '#6F4BFD' }">¾Æ´Ï¿À</button>
                     </div>
                 </div>
             </div>
             <div style="height: 155px"></div>
             <div class="btns">
-                <!-- ì˜ˆìˆ˜ê¸ˆ, ìˆ˜ìµë¥  ë²„íŠ¼ -->
-                <button id="deposit">ì˜ˆìˆ˜ê¸ˆ</button>
-                <button id="erate">ìˆ˜ìµë¥ </button>
+                <!-- ¿¹¼ö±İ, ¼öÀÍ·ü ¹öÆ° -->
+                <button id="deposit">¿¹¼ö±İ</button>
+                <button id="erate">¼öÀÍ·ü</button>
             </div>
             <div style="height: 135px"></div>
         </div>
@@ -68,9 +68,8 @@ import sonificationInit from 'highcharts/modules/sonification'
 import { Chart } from 'highcharts-vue' 
 
 sonificationInit(Highcharts)
-let currentTime = new Date().toTimeString().split(' ')[0];
-const categories = [currentTime];
-
+const categories = [];
+const data = [];
 export default {
     name: 'Query',
     components: {
@@ -78,13 +77,11 @@ export default {
     },
     data() {
         return {
-            isPopupOpen: false,
-            data: [{ data: [], categories: [new Date().toTimeString().split(" ")[0]] }],
-            state: null,
             chartOptions: {
                 series: [{
                     showInLegend: false,
-                    data: [1,2,3],
+                    data: data,
+                    categories : categories,
                     point: {
                         events: {
                             click: function () {
@@ -92,9 +89,6 @@ export default {
                                     instruments: [{
                                         instrument: "triangleMajor",
                                         instrumentMapping: {
-                                            volume: function (point) {
-                                                return point.color === "red" ? 0.2 : 0.8;
-                                            },
                                             duration: 200,
                                             pan: "x",
                                             frequency: "y",
@@ -111,7 +105,7 @@ export default {
                     }
                 }],
                 xAxis: {
-                    categories: [new Date().toTimeString().split(" ")[0]],
+                    categories: categories,
                     labels: {
                         style: {
                             fontSize: "5px",
@@ -134,17 +128,14 @@ export default {
                     },
                 },
                 title: {
-                    text: "ì‹¤ì‹œê°„ ì°¨íŠ¸",
+                    text: "½Ç½Ã°£ Â÷Æ®",
                     style: "10px",
                 },
                 accessibility: {
-                        enabled: false
+                        enabled: true
                 },
             }
         };
-    },
-    mounted() {
-        this.isloaded = true;
     },
     methods: {
         goToStockList() {
@@ -177,32 +168,29 @@ export default {
             this.isPopupOpen = true;
         },
         onConfirm() {
-            // êµ¬ë§¤ í™•ì¸ ë¡œì§
+            // ±¸¸Å È®ÀÎ ·ÎÁ÷
             this.isPopupOpen = false;
         },
         onCancel() {
             this.isPopupOpen = false;
         },
-
-        liveplay() {
-            const chart = Highcharts.charts[0];
-            const series = chart.series[0];
-            const points = series.points;
-            console.log(chart)
+        livemode() {
+            function liveplay() {
+            const test = Highcharts.charts[0];
+            const temp = test.series[0]
+            console.log(temp)
             let i = 0;
             const interval = setInterval(() => {
                 if (i == 1) {
                     clearInterval(interval);
                     return;
                 }
-                const point = points[points.length - i - 1];
-                point.sonify({
+                const points = temp.points[temp.points.length-i-1];
+
+                points.sonify({
                     instruments: [{
                         instrument: "triangleMajor",
                         instrumentMapping: {
-                            volume: function (point) {
-                                return point.color === 'red' ? 0.2 : 0.8;
-                            },
                             duration: 200,
                             pan: "x",
                             frequency: "y",
@@ -213,29 +201,39 @@ export default {
                             maxFrequency: 1050,
                         }
                     }]
-                })
+                });
                 i++
-            }, 500)
-        },
-        main(data) {
-            const temp = document.getElementById('container')
-            const chart = Highcharts.charts[temp.getAttribute('data-highcharts-chart')]
+            }, 1000)
+                }
+            setInterval(() => {
+            const temp = Highcharts.charts[0]
+            const data_set = temp.series
+            //   console.log(data_set)
             let currentTime = new Date().toTimeString().split(' ')[0];
             let randomprice = Math.round(Math.random() * 10);
-            console.log(chart.series[0].data)
-            chart.series[0].addPoint(randomprice)
-            data.categories.push(currentTime)
-            chart.series[0].data[chart.series[0].data.length - 1].category = currentTime
+            data_set[0].addPoint(randomprice)
+            //   console.log(temp)
+            categories.push(currentTime)
+            //   data_set[0].xData = categories
+            temp.xAxis[0].categories = categories
+
+            for(let i = 0; i < categories.length; i++)
+            {
+                data_set[0].data[i].category = categories[i]
+            }
+            //   data_set[0].data[categories.length - 1].category = categories[categories.length - 1]
             liveplay()
-        },
+                        },1000);
+            
+            },
     },
     computed: {
         stocks() {
             return this.$store.state.stocks;
         }
-    },
-    created() { },
-}
+
+    }
+    }
 </script>
 
 <style scoped>
